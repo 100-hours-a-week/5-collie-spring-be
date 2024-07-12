@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-
 @RestController
 @RequestMapping("/api/posts")
 public class PostController {
@@ -88,7 +87,7 @@ public class PostController {
                                              @RequestParam(value = "postPicture", required = false) String postPicture,
                                              @RequestParam("data") String postJson) throws IOException, ServletException {
         Post post = parsePostJson(postJson);
-        post.setId(postId.intValue());
+        post.setPostId(postId.intValue()); // setPostId로 변경
 
         if (file != null && !file.isEmpty()) {
             postService.updatePost(post, file);
@@ -118,16 +117,10 @@ public class PostController {
         return objectMapper.readValue(postJson, Post.class);
     }
 
-//    @PutMapping("/{postId}/views")
-//    public void incrementPostViews(@PathVariable("postId") Long postId) {
-//        postService.incrementPostViews(postId);
-//    }
-
     @GetMapping("/{postId}/comments")
     public List<Comment> getCommentsByPostId(@PathVariable("postId") Long postId) {
-        return postService.getCommentsByPostId(postId);
+        return postService.getCommentsByPostId(postId.intValue());
     }
-
 
     @PostMapping("/{postId}/comments")
     public void createComment(@PathVariable("postId") Long postId, @RequestBody Comment comment) {
@@ -136,14 +129,14 @@ public class PostController {
     }
 
     @PutMapping("/{postId}/comments/{commentId}")
-    public void updateComment(@PathVariable("commentId") Long postId, @PathVariable("commentId") Long commentId, @RequestBody Comment comment) {
-        comment.setId(commentId.intValue());
+    public void updateComment(@PathVariable("postId") Long postId, @PathVariable("commentId") Long commentId, @RequestBody Comment comment) {
+        comment.setCommentId(commentId.intValue()); // setCommentId로 변경
         comment.setPostId(postId.intValue());
         postService.updateComment(comment);
     }
 
     @DeleteMapping("/{postId}/comments/{commentId}")
     public void deleteComment(@PathVariable("commentId") Long commentId) {
-        postService.deleteComment(commentId);
+        postService.deleteComment(commentId.intValue());
     }
-
+}
